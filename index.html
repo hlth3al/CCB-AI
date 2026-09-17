@@ -1,463 +1,199 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCB-AI | سامانه فرماندهی پایش و مدیریت بحران نقدینگی بانک مرکزی</title>
-    <style>
-        :root {
-            --bg-color: #030712;
-            --panel-bg: rgba(15, 23, 42, 0.85);
-            --border-color: #1e293b;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --accent-yellow: #f59e0b;
-            --accent-blue: #3b82f6;
-            --accent-cyan: #06b6d4;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پنل، داشبورد و پلتفرم فرماندهی عملیات هوشمند بانک مرکزی | CCB-AI</title>
+<style>
+:root {
+  --bg-main: #060d17;
+  --panel-bg: rgba(10, 24, 40, 0.92);
+  --border-ui: #1e3a5f;
+  --accent-cyan: #00f2ff;
+  --accent-gold: #f59e0b;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --text-light: #f8fafc;
+  --text-dim: #94a3b8;
+}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Tahoma', 'Segoe UI', sans-serif;
-        }
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+body { background-color: var(--bg-main); color: var(--text-light); font-size: 13px; padding: 15px; line-height: 1.6; }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            overflow-x: hidden;
-            font-size: 13px;
-        }
+.header {
+  background: #091a2e; border: 1px solid var(--accent-cyan); border-radius: 8px;
+  padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 15px; box-shadow: 0 0 15px rgba(0, 242, 255, 0.15);
+}
+.header h1 { font-size: 16px; color: var(--accent-cyan); }
+.badge {
+  background: rgba(16, 185, 129, 0.15); color: var(--accent-green);
+  border: 1px solid var(--accent-green); padding: 4px 10px; border-radius: 4px;
+  font-size: 11px; font-weight: bold;
+}
 
-        /* Top Status Bar */
-        .header-bar {
-            background: linear-gradient(90deg, #0f172a, #1e1b4b);
-            border-bottom: 2px solid #312e81;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+.grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+@media (max-width: 768px) { .grid-container { grid-template-columns: 1fr; } }
 
-        .header-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+.card { background: var(--panel-bg); border: 1px solid var(--border-ui); border-radius: 8px; padding: 15px; }
+.card-title { font-size: 14px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 12px; border-bottom: 1px solid var(--border-ui); padding-bottom: 6px; }
 
-        .header-title h1 {
-            font-size: 18px;
-            color: #e2e8f0;
-            letter-spacing: 1px;
-        }
+.metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.metric-box { background: #081626; border: 1px solid var(--border-ui); padding: 10px; border-radius: 6px; }
+.metric-box span { font-size: 11px; color: var(--text-dim); display: block; }
+.metric-box strong { font-size: 14px; color: #fff; display: block; margin-top: 4px; }
 
-        .badge-live {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--accent-green);
-            border: 1px solid var(--accent-green);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            animation: pulse 1.5s infinite;
-        }
+.btn {
+  background: #0f2742; color: #fff; border: 1px solid #1e4976; padding: 10px;
+  border-radius: 6px; cursor: pointer; width: 100%; margin-bottom: 8px;
+  text-align: right; font-size: 12px; transition: 0.2s;
+}
+.btn:hover { border-color: var(--accent-cyan); background: #173d66; }
+.btn-danger { border-color: var(--accent-red); color: #fca5a5; }
 
-        /* Dashboard Grid */
-        .dashboard-container {
-            display: grid;
-            grid-template-columns: 320px 1fr 340px;
-            gap: 12px;
-            padding: 12px;
-            height: calc(100vh - 120px);
-        }
+.console {
+  background: #030a12; border: 1px solid var(--border-ui); border-radius: 6px;
+  padding: 10px; height: 130px; overflow-y: auto; font-family: monospace;
+  font-size: 11px; color: #38bdf8;
+}
 
-        .panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            backdrop-filter: blur(8px);
-        }
+.accordion-wrapper { margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+.acc-btn { 
+  background: #0b1e33; color: #f8fafc; border: 1px solid #1e3a5f; border-right: 4px solid var(--accent-cyan); 
+  padding: 12px 15px; border-radius: 6px; cursor: pointer; width: 100%; text-align: right; font-size: 13px; font-weight: bold; 
+  display: flex; justify-content: space-between; align-items: center; transition: 0.2s;
+}
+.acc-btn:hover { background: #122f50; border-color: var(--accent-cyan); }
+.acc-content { 
+  display: none; background: #061322; border: 1px solid #162e4a; border-top: none; 
+  border-radius: 0 0 6px 6px; padding: 15px 18px; font-size: 12.5px; line-height: 1.85; color: #cbd5e1; 
+}
+.acc-content h4 { color: var(--accent-cyan); margin-bottom: 6px; font-size: 13px; }
 
-        .panel-header {
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 6px;
-            margin-bottom: 4px;
-            font-size: 13px;
-            font-weight: bold;
-            color: var(--accent-cyan);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Radar & Network Visualization */
-        .radar-box {
-            position: relative;
-            width: 100%;
-            height: 260px;
-            background: #020617;
-            border: 1px solid #1e293b;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        canvas#radarCanvas {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Telemetry Cards */
-        .metric-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .metric-card {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid var(--border-color);
-            padding: 8px;
-            border-radius: 4px;
-        }
-
-        .metric-title {
-            font-size: 10px;
-            color: var(--text-muted);
-        }
-
-        .metric-value {
-            font-size: 18px;
-            font-weight: bold;
-            color: #ffffff;
-            margin: 4px 0;
-        }
-
-        .metric-sub {
-            font-size: 10px;
-            color: var(--accent-green);
-        }
-
-        /* Action Buttons & Crisis Control */
-        .btn {
-            background: #1e293b;
-            color: #fff;
-            border: 1px solid #334155;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 11px;
-            transition: all 0.2s;
-            text-align: center;
-        }
-
-        .btn:hover {
-            background: #334155;
-            border-color: var(--accent-cyan);
-        }
-
-        .btn-danger {
-            background: rgba(239, 68, 68, 0.2);
-            border-color: var(--accent-red);
-            color: var(--accent-red);
-        }
-
-        .btn-danger:hover {
-            background: var(--accent-red);
-            color: #fff;
-        }
-
-        .btn-warning {
-            background: rgba(245, 158, 11, 0.2);
-            border-color: var(--accent-yellow);
-            color: var(--accent-yellow);
-        }
-
-        /* Terminal / Log Box */
-        .console-box {
-            background: #020617;
-            border: 1px solid #1e293b;
-            border-radius: 4px;
-            padding: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 10px;
-            height: 160px;
-            overflow-y: auto;
-            color: #38bdf8;
-            line-height: 1.4;
-        }
-
-        .log-entry { margin-bottom: 2px; }
-        .log-alert { color: var(--accent-red); }
-        .log-success { color: var(--accent-green); }
-
-        /* Legal / Author Footer */
-        .footer-bar {
-            background: #090d16;
-            border-top: 1px solid var(--border-color);
-            padding: 8px 20px;
-            font-size: 10px;
-            color: var(--text-muted);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.4; }
-            100% { opacity: 1; }
-        }
-    </style>
+.footer-card { background: #071422; border: 1px solid var(--border-ui); padding: 15px 20px; border-radius: 6px; margin-top: 15px; }
+.footer-card code { color: var(--accent-gold); font-size: 13px; font-weight: bold; }
+</style>
 </head>
 <body>
 
-    <!-- Header -->
-    <div class="header-bar">
-        <div class="header-title">
-            <h1>CCB-AI | مرکز فرماندهی و مدیریت بحران بانک مرکزی</h1>
-            <span class="badge-live">HIL LINK ACTIVE</span>
-        </div>
-        <div style="font-size: 11px; color: var(--text-muted);">
-            طراح و اپراتور ارشد: <strong>حسین لعلیان (رتبه ۳۲ دکتری)</strong>
-        </div>
+<div class="header">
+  <div>
+    <h1>🏛️ پنل، داشبورد و پلتفرم فرماندهی عملیات هوشمند بانک مرکزی</h1>
+    <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">دیسپاچینگ نقدینگی، کنترل بلادرنگ کریدور ارزی و مداخله الگوریتمی در بازار بین‌بانکی</div>
+  </div>
+  <div class="badge">SECURE CORE LINK: ACTIVE</div>
+</div>
+
+<div class="grid-container">
+  <div class="card">
+    <div class="card-title">پایش تراز نقدینگی و جریان ارزی</div>
+    <div class="metrics-grid">
+      <div class="metric-box"><span>نرخ بهره بین‌بانکی (ریپو):</span><strong style="color: var(--accent-green);">۲۳.۶٪ (تحت کنترل)</strong></div>
+      <div class="metric-box"><span>شاخص مهار فشار تورمی:</span><strong>۸۸.۴٪ بهینه</strong></div>
+      <div class="metric-box"><span>تراز تسویه برخط (ساتنا/پایا):</span><strong style="color: var(--accent-cyan);">پایدار و ایمن</strong></div>
+      <div class="metric-box"><span>الگوریتم مداخله فعال:</span><strong>پیش‌بین تقاضای سفته‌بازی</strong></div>
     </div>
+  </div>
+  <div class="card">
+    <div class="card-title">کنسول فرامین مداخله تاکتیکی</div>
+    <button class="btn" onclick="triggerAction('LIQUIDITY_DISPATCH')">⚡ تزریق هدفمند و تثبیت نرخ در بازار بین‌بانکی</button>
+    <button class="btn" onclick="triggerAction('FOREX_SHAVING')">🛡️ فعال‌سازی سوئیچ مهار تقاضای کاذب ارزی (Shock Absorption)</button>
+    <button class="btn btn-danger" onclick="triggerAction('EMERGENCY_FREEZE')">⚠️ مسدودسازی تراکنش‌های مشکوک پولشویی کلان</button>
+    <div class="console" id="consoleLog"><div>[مرکز فرماندهی] دیتالینک شبکه شتاب، شاپرک و بازار متشکل برقرار است.</div></div>
+  </div>
+</div>
 
-    <!-- Main Content Grid -->
-    <div class="dashboard-container">
-
-        <!-- Left Column: Controls & Scenarios -->
-        <div class="panel">
-            <div class="panel-header">
-                <span>تزریق سناریوهای بحران ملی</span>
-                <span>[P-CONTROL]</span>
-            </div>
-            
-            <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">
-                فعال‌سازی پروتکل‌های هوشمند در مواجهه با تهدیدات سیستماتیک شبکه مالی کشور:
-            </p>
-
-            <button class="btn btn-danger" onclick="triggerCrisis('CYBER_ATTACK')">
-                🛡️ پدافند حملات سایبری به سوییچ شتاب
-            </button>
-            <button class="btn btn-warning" onclick="triggerCrisis('FX_RUN')">
-                📈 مهار نوسانات هیجانی و خروج نقدینگی
-            </button>
-            <button class="btn" onclick="triggerCrisis('RTGS_FREEZE')">
-                🔄 بازسازی تسویه بین‌بانکی (RTGS Optimization)
-            </button>
-
-            <hr style="border-color: var(--border-color); margin: 6px 0;">
-
-            <div class="panel-header">
-                <span>دستورات دستی لبه HIL</span>
-            </div>
-            
-            <div style="display: flex; gap: 6px;">
-                <button class="btn" style="flex: 1;" onclick="playPing()">پالس شبکه (Ping)</button>
-                <button class="btn btn-danger" style="flex: 1;" onclick="playAlert()">آژیر خطرات پولشویی</button>
-            </div>
-
-            <hr style="border-color: var(--border-color); margin: 6px 0;">
-
-            <div class="panel-header">
-                <span>معادلات پایه محاسباتی</span>
-            </div>
-            <div style="font-size: 10px; color: #cbd5e1; line-height: 1.5; background: #020617; padding: 6px; border-radius: 4px;">
-                <code>LSR = ∑(Inflow - Outflow) / Risk_Weight</code><br>
-                <code>AML_Score = ANFIS(f₁(Tx_Size), f₂(Freq))</code>
-            </div>
-        </div>
-
-        <!-- Center Column: Radar & Network Sweep -->
-        <div class="panel">
-            <div class="panel-header">
-                <span>رادار بلادرنگ پایش شبکه پرداخت و تسویه کشور (SHETAB / RTGS / SATNA)</span>
-                <span id="sweepStatus" style="color: var(--accent-green);">در حال پایش</span>
-            </div>
-
-            <div class="radar-box">
-                <canvas id="radarCanvas"></canvas>
-            </div>
-
-            <div class="metric-grid">
-                <div class="metric-card">
-                    <div class="metric-title">نرخ تراکنش‌های لحظه‌ای (TPS)</div>
-                    <div class="metric-value" id="tpsVal">۱۸٬۴۵۰</div>
-                    <div class="metric-sub">پایداری شبکه: ۹۹.۹۷٪</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-title">شاخص ریسک سیستماتیک نقدینگی</div>
-                    <div class="metric-value" id="riskVal" style="color: var(--accent-green);">12.4%</div>
-                    <div class="metric-sub">وضعیت: ایمن (Low Threshold)</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-title">تأخیر هم‌شبیه‌سازی HIL/Simulink</div>
-                    <div class="metric-value" id="latencyVal">0.82 ms</div>
-                    <div class="metric-sub">ارتباط مستقیم با لبه سخت‌افزار</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-title">تراکنش‌های مشکوک مسدوده (AML)</div>
-                    <div class="metric-value" id="amlVal" style="color: var(--accent-yellow);">142</div>
-                    <div class="metric-sub">توسط هسته عصبی-فازی ANFIS</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Column: Terminal Logs & ANFIS Engine -->
-        <div class="panel">
-            <div class="panel-header">
-                <span>کنسول عملیاتی شبکه و هسته ANFIS</span>
-                <span>LOGS</span>
-            </div>
-
-            <div class="console-box" id="consoleLog">
-                <div class="log-entry">[00:00:01] System Initialized: Central Bank AI Engine V4.1</div>
-                <div class="log-entry log-success">[00:00:02] HIL Hardware Link: Connected (0.82ms)</div>
-                <div class="log-entry">[00:00:03] ANFIS Ruleset: 128 Fuzzy Rules Loaded.</div>
-            </div>
-
-            <div class="panel-header" style="margin-top: 8px;">
-                <span>وضعیت هسته‌های هوشمند</span>
-            </div>
-
-            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 11px;">
-                <div style="display: flex; justify-content: space-between; background: #020617; padding: 6px; border-radius: 4px;">
-                    <span>هسته ANFIS (استنتاج غیرخطی):</span>
-                    <span style="color: var(--accent-green);">فعال (Active)</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; background: #020617; padding: 6px; border-radius: 4px;">
-                    <span>الگوریتم PSO/GWO (تراز نقدینگی):</span>
-                    <span style="color: var(--accent-green);">آماده‌به‌کار</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; background: #020617; padding: 6px; border-radius: 4px;">
-                    <span>پروتکل P-HIL (شبیه‌سازی لبه):</span>
-                    <span style="color: var(--accent-green);">سنکرون (Sync)</span>
-                </div>
-            </div>
-        </div>
-
+<!-- بخش ۵ دکمه آکاردئونی متناسب‌شده برای پنل CCB-AI -->
+<div class="accordion-wrapper">
+  <!-- دکمه ۱ -->
+  <div>
+    <button class="acc-btn" onclick="toggleAccordion(1)"><span>📌 دکمه ۱: این دکمه را بفشار تا متصل شوی به طرح توجیهی عملیاتی این پلتفرم!</span><span id="icon-1">▼</span></button>
+    <div class="acc-content" id="acc-1">
+      <h4>مهار فوری شوک‌های ارزی، کنترل نقدینگی سرگردان و مدیریت بحران پولی: معرفی پنل CCB-AI</h4>
+      <p>نظام بانکی و اقتصاد کشور امروز با دو تهدید مالی و عملیاتی جدی در حوزه پولی مواجه است:<br>
+      ۱. خسارت ناشی از شوک‌های لحظه‌ای تقاضای سفته‌بازی در بازار ارز و طلا که منجر به بی‌ثباتی ناگهانی قیمت‌ها می‌گردد.<br>
+      ۲. اضافه برداشت‌های سنگین بانک‌ها از بانک مرکزی و تحمیل خلق پول پرقدرت و جهش‌های تورمی ناشی از عدم تراز نقدینگی روزانه.<br>
+      <strong>پیاده‌سازی مغز متفکر نرم‌افزاری روی شبکه بانکی:</strong> این سامانه به عنوان مغز متفکر داده‌محور بر شبکه پرداخت و تسویه بین‌بانکی مستقر شده تا با تثبیت گردش ریال، حذف ناترازی بانک‌ها و اولویت‌بندی تزریق هوشمند ارز و منابع اعتباری در هر ثانیه از شبانه‌روز، ثبات پولی را برقرار سازد.<br>
+      <strong>این داشبورد روی شبکه پولی چه کاری انجام می‌دهد؟</strong><br>
+      • <strong>مهار هوشمند پیک تقاضا (Peak Shaving پولی):</strong> زمانی که تقاضای سفته‌بازی یا خروج سرمایه به سقف مرزی بحرانی نزدیک می‌شود، پنل بلافاصله با فعال‌سازی ذخایر مداخله‌ای و تغییر پویای نرخ ریپو، هیجان بازار را مهار می‌کند تا کسری به پایه پولی تحمیل نگردد.<br>
+      • <strong>تخصیص اقتصادی منابع مالی و ارزی:</strong> در هر لحظه، بر پایه اولویت‌های کالاهای اساسی و تراز بازرگانی، بهینه‌ترین ترکیب منابع ارزی بین متقاضیان واقعی توزیع می‌شود.</p>
     </div>
+  </div>
 
-    <!-- Footer & Disclaimer -->
-    <div class="footer-bar">
-        <div>
-            <strong>اخطار حفاظتی و حقوقی:</strong> این صفحه یک نسخه نمایشی محدود (Limited Demo) از نسخه اصلی سامانه فرماندهی بانک مرکزی است. کلیه الگوریتم‌های راهبردی و اتصال واقعی HIL صیانت شده‌اند.
-        </div>
-        <div>
-            ارتباط مستقیم: <code>ai.algorithms.ballistics@gmail.com</code>
-        </div>
+  <!-- دکمه ۲ -->
+  <div>
+    <button class="acc-btn" onclick="toggleAccordion(2)"><span>⚙️ دکمه ۲: این دکمه را بفشار تا متصل شوی به مکانیزم کاری و ارزش پیشنهادی سامانه!</span><span id="icon-2">▼</span></button>
+    <div class="acc-content" id="acc-2">
+      <h4>دیده‌بانی یکپارچه، دیسپاچینگ منابع و تسویه بلادرنگ:</h4>
+      <p><strong>مسئله حاکمیتی امروز:</strong> نوسانات غیرقابل پیش‌بینی در نرخ ارز، اضافه برداشت بانک‌ها، فرار سرمایه و فقدان اشراف در لحظه بر تراکنش‌های مشکوک کلان.<br>
+      <strong>راهکار سامانه ما:</strong><br>
+      • <strong>دیده‌بانی یکپارچه:</strong> پایش و مدل‌سازی در لحظه تراکنش‌های ساتنا، پایا، شاپرک، تراز روزانه بانک‌ها و نرخ مبادلات ارز تجاری و حواله‌ها.<br>
+      • <strong>مهار پیک تقاضای سفته‌بازی:</strong> مهار خودکار نوسانات غیرواقعی با کنترل سقف تراکنش‌های کلان و مدیریت جریان پول سرگردان در بازارهای موازی جهت جلوگیری از فروپاشی ارزش پول ملی.<br>
+      • <strong>دیسپاچینگ اقتصادی (Economic Liquidity Dispatch):</strong> هدایت نقدینگی مازاد بانک‌های دارای تراز مثبت به سمت بانک‌های نیازمند از طریق بازار بین‌بانکی با کمترین ریسک اعتباری و کمترین تزریق خطوط اعتباری جدید.<br>
+      • <strong>ارتباط مستقیم با سوئیچ‌های بانکی:</strong> قابلیت اتصال پلتفرم از طریق وب‌سرویس‌های امن اختصاصی، HSMها و APIهای استاندارد بانکی به کربنکینگ (Core Banking) و سوئیچ تسویه ملی جهت صدور فرامین کنترلی برخط.</p>
     </div>
+  </div>
 
-    <!-- Logic & Canvas Scripts -->
-    <script>
-        // Audio Synthesizer (No external audio files needed)
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  <!-- دکمه ۳ -->
+  <div>
+    <button class="acc-btn" onclick="toggleAccordion(3)"><span>🧭 دکمه ۳: این دکمه را بفشار تا متصل شوی به مسیر عملیاتی این پنل!</span><span id="icon-3">▼</span></button>
+    <div class="acc-content" id="acc-3">
+      <h4>ترسیم نقشه جریان نقدینگی و صدور احکام مداخله ارزی:</h4>
+      <p>• <strong>دیده‌بانی چندمنظوره:</strong> سیستم به صورت بلادرنگ تراز حساب تسویه بانک‌ها نزد بانک مرکزی، حجم تقاضای ثبت‌سفارش‌ها، شکاف نرخ بازار آزاد و نیما و روند عرضه در بازار متشکل را مانیتور می‌کند.<br>
+      • <strong>الگوریتم مهار جهش‌های تورمی:</strong> به محض شکل‌گیری امواج سفته‌بازی مشکوک در بازار پول، الگوریتم به صورت خودکار سیاست‌های تحدید اعتبار و اوراق عملیات بازار باز (OMO) را پیشنهاد و اجرا می‌کند تا سقف خلق نقدینگی کنترل شود.<br>
+      • <strong>دیسپاچینگ بهینه اقتصادی اعتبارات:</strong> مشخص می‌کند در هر ساعت، نیازهای ارزی صنایع کشور از کدام محل (صادرات پتروشیمی، منابع فولادی، ذخایر صندوق یا مبادلات تهاتری) تأمین شود تا فشار بر ذخایر استراتژیک به حداقل برسد.<br>
+      • <strong>خروجی آماده مداخله اجرایی:</strong> این پنل صرفاً نمایشگر نیست؛ خروجی‌ها و فرامین سیستمی آن مستقیماً می‌توانند سقف لوله‌های تسویه ساتنا را تغییر داده، سهمیه تخصیص بانک‌ها را تعدیل نموده و به سوئیچ شاپرک فرمان اعمال محدودیت تراکنش صادر کنند.</p>
+    </div>
+  </div>
 
-        function playPing() {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.3);
-            logMessage("PULSE: شبکه بین‌بانکی روبش شد.", "log-success");
-        }
+  <!-- دکمه ۴ -->
+  <div>
+    <button class="acc-btn" onclick="toggleAccordion(4)"><span>📝 دکمه ۴: این دکمه را بفشار تا متصل شوی به نکات کلیدی قرارداد و تعهدات فنی!</span><span id="icon-4">▼</span></button>
+    <div class="acc-content" id="acc-4">
+      <h4>شفافیت فنی و تعهدات امنیتی در سامانه‌های کلان بانکی:</h4>
+      <p>۱. <strong>محدوده مسئولیت (Disclaimer):</strong> عملکرد الگوریتم‌ها بر مبنای صحت فیدهای داده‌ای دریافتی از کربنکینگ بانک‌ها و گمرکات است؛ هرگونه نقص داده‌ای ناشی از زیرساخت‌های مخابراتی یا شبکه بانکی خارج از حوزه نرم‌افزار هوشمند است.<br>
+      ۲. <strong>محرمانگی و امنیت سایبری (Strict NDA & Banking Secrecy):</strong> داده‌های تراکنشی، حساب‌ها و هویت اشخاص حقیقی و حقوقی جزو اسرار حاکمیتی رده‌بالا تلقی شده و امنیت آن از طریق استقرار در سرورهای کاملاً مجزا (Air-Gapped) بدون دسترسی به اینترنت تضمین می‌گردد.<br>
+      ۳. <strong>فاز آزمایشی و ارزیابی (Proof of Concept):</strong> آغاز همکاری با یک دوره پایلوت ۳۰ تا ۶۰ روزه با سنجش معیارهای مشخص (کاهش ناترازی بانک‌های هدف، افزایش سرعت تخصیص و مهار نرخ انحراف ارز) همراه خواهد بود.</p>
+    </div>
+  </div>
 
-        function playAlert() {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-            osc.frequency.linearRampToValueAtTime(1200, audioCtx.currentTime + 0.5);
-            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.5);
-            logMessage("ALERT: تراکنش مشکوک AML توسط ANFIS شناسایی شد!", "log-alert");
-        }
+  <!-- دکمه ۵ -->
+  <div>
+    <button class="acc-btn" onclick="toggleAccordion(5)"><span>💼 دکمه ۵: بفشار این دکمه را تا متصل شوی به مدل‌های پیشنهادی ما!</span><span id="icon-5">▼</span></button>
+    <div class="acc-content" id="acc-5">
+      <h4>مدل‌های استقرار، توسعه و همکاری در سطح حاکمیتی:</h4>
+      <p><strong>مدل اول (بهبود شاخص‌های ثبات و صرفه‌جویی پولی):</strong><br>
+      استقرار پایلوت سامانه به مدت ۳ تا ۶ ماه؛ سنجش میزان کاهش اضافه برداشت‌های بانکی و کاهش هدررفت منابع ارزی نسبت به الگوهای سنتی و پرداخت حق‌الزحمه بر مبنای تحقق شاخص‌های بهینه‌سازی تثبیت بازار.<br>
+      <strong>مدل دوم (واگذاری لایسنس پلتفرم حاکمیتی + نگهداری سالانه):</strong><br>
+      فروش لایسنس کامل ماژول‌های دیسپاچینگ نقدینگی و تحلیل مداخله به بانک مرکزی و نهادهای تنظیم‌گر بازار مالی همراه با آموزش تخصصی کارشناسان، کالیبراسیون دوره‌ای مدل‌های هوش مصنوعی و پشتیبانی فنی ۲۴/۷.</p>
+    </div>
+  </div>
+</div>
 
-        function logMessage(msg, typeClass = "") {
-            const consoleBox = document.getElementById("consoleLog");
-            const time = new Date().toLocaleTimeString('fa-IR');
-            const div = document.createElement("div");
-            div.className = `log-entry ${typeClass}`;
-            div.innerText = `[${time}] ${msg}`;
-            consoleBox.appendChild(div);
-            consoleBox.scrollTop = consoleBox.scrollHeight;
-        }
+<div class="footer-card">
+  <div style="font-size: 12px; margin-bottom: 5px;">طراحی و توسعه مهندسی: <strong>حسین لعلیان؛ رتبه ۳۲ کنکور دکتری</strong></div>
+  <div>رایانامه رسمی: <code>ai.algorithms.ballistics@gmail.com</code></div>
+</div>
 
-        // Radar Canvas Sweep
-        const canvas = document.getElementById('radarCanvas');
-        const ctx = canvas.getContext('2d');
-        let angle = 0;
+<script>
+function triggerAction(type) {
+  const log = document.getElementById('consoleLog');
+  const time = new Date().toLocaleTimeString('fa-IR');
+  log.innerHTML += `<div>[${time}] فرمان سیستمی ${type} با موفقیت در هسته فرماندهی ثبت گردید.</div>`;
+  log.scrollTop = log.scrollHeight;
+}
 
-        function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = canvas.parentElement.clientHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        function drawRadar() {
-            const w = canvas.width;
-            const h = canvas.height;
-            const cX = w / 2;
-            const cY = h / 2;
-            const radius = Math.min(w, h) / 2 - 10;
-
-            ctx.fillStyle = 'rgba(2, 6, 23, 0.2)';
-            ctx.fillRect(0, 0, w, h);
-
-            // Radar Circles
-            ctx.strokeStyle = '#1e293b';
-            ctx.lineWidth = 1;
-            for (let r = radius / 3; r <= radius; r += radius / 3) {
-                ctx.beginPath();
-                ctx.arc(cX, cY, r, 0, Math.PI * 2);
-                ctx.stroke();
-            }
-
-            // Radar Line Sweep
-            ctx.beginPath();
-            ctx.moveTo(cX, cY);
-            ctx.lineTo(cX + radius * Math.cos(angle), cY + radius * Math.sin(angle));
-            ctx.strokeStyle = '#10b981';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            angle += 0.03;
-            requestAnimationFrame(drawRadar);
-        }
-        drawRadar();
-
-        // Crisis Actions
-        function triggerCrisis(type) {
-            playAlert();
-            if(type === 'CYBER_ATTACK') {
-                logMessage("CRISIS: حمله سایبری شناسایی شد! ایزوله‌سازی گره‌های آلوده شتاب...", "log-alert");
-                document.getElementById('riskVal').innerText = "68.2%";
-                document.getElementById('riskVal').style.color = "var(--accent-red)";
-            } else if(type === 'FX_RUN') {
-                logMessage("FX_STRESS: نوسان شدید بازار ارز. الگوریتم تزریق بهینه نقدینگی فعال شد.", "log-alert");
-            } else if(type === 'RTGS_FREEZE') {
-                logMessage("OPTIMIZE: بازسازی انسداد تسویه با الگوریتم فراابتکاری PSO...", "log-success");
-                document.getElementById('riskVal').innerText = "12.4%";
-                document.getElementById('riskVal').style.color = "var(--accent-green)";
-            }
-        }
-    </script>
+function toggleAccordion(id) {
+  const content = document.getElementById('acc-' + id);
+  const icon = document.getElementById('icon-' + id);
+  if (content.style.display === 'block') {
+    content.style.display = 'none';
+    icon.innerText = '▼';
+  } else {
+    content.style.display = 'block';
+    icon.innerText = '▲';
+  }
+}
+</script>
 </body>
 </html>
